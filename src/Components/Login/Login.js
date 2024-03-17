@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Navigate } from 'react-router-dom';
-import Navbar from '../Navbar/Navbar';
+import { Navigate } from "react-router-dom";
+import Navbar from "../Navbar/Navbar";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -11,6 +11,14 @@ function Login() {
   const [isFormValid, setIsFormValid] = useState(false);
   const [error, setError] = useState("");
   const [redirect, setRedirect] = useState(false);
+  const [redirectSignUp, setRedirectSignUp] = useState(false);
+
+  useEffect(() => {
+    const userData = sessionStorage.getItem("userData");
+    if (userData) {
+      setRedirect(true);
+    }
+  }, []);
 
   const handleLogin = async () => {
     if (validateEmail(email) && validatePassword(password)) {
@@ -22,8 +30,16 @@ function Login() {
         console.log(response.data);
         window.alert("Logged in successfully!");
         setError("");
+
+        // Store user data in session storage
+        sessionStorage.setItem("userData", JSON.stringify(response.data.user));
+
         setRedirect(true);
       } catch (error) {
+        if(error.response.data.error==='User not found'){
+          window.alert('User Not Found, Kindly Sign Up!')
+          setRedirectSignUp(true)
+        }
         setError(error.response.data.error);
       }
     }
@@ -72,68 +88,74 @@ function Login() {
     validatePassword(value);
     setIsFormValid(validateEmail(email) && validatePassword(value));
   };
+
   if (redirect) {
     return <Navigate to="/shop" />;
   }
+
+  if (redirectSignUp) {
+    return <Navigate to="/signup" />;
+  }
+
   return (
     <div>
-      <Navbar type='beforeLogin'/>
-    <div className="container mt-5">
-      <div className="row justify-content-center">
-        <div className="col-md-6">
-          <div className="card shadow-lg">
-            <div className="card-header bg-primary text-white text-center">
-              <h3 className="mb-0">Login</h3>
-            </div>
-            <div className="card-body">
-              {error && <div className="alert alert-danger">{error}</div>}
-              <form>
-                <div className="form-group">
-                  <label htmlFor="email">Email</label>
-                  <input
-                    type="email"
-                    className={`form-control ${
-                      emailError ? "is-invalid" : ""
-                    }`}
-                    id="email"
-                    placeholder="Enter email"
-                    value={email}
-                    onChange={handleEmailChange}
-                  />
-                  {emailError && (
-                    <div className="invalid-feedback">{emailError}</div>
-                  )}
-                </div>
-                <div className="form-group">
-                  <label htmlFor="password">Password</label>
-                  <input
-                    type="password"
-                    className={`form-control ${
-                      passwordError ? "is-invalid" : ""
-                    }`}
-                    id="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={handlePasswordChange}
-                  />
-                  {passwordError && (
-                    <div className="invalid-feedback">{passwordError}</div>
-                  )}
-                </div>
-                <button
-                  type="button"
-                  className="btn btn-primary btn-block"
-                  onClick={handleLogin}
-                  disabled={!isFormValid}
-                >
-                  Login
-                </button>
-              </form>
+      <Navbar type="beforeLogin" />
+      <div className="container mt-5">
+        <div className="row justify-content-center">
+          <div className="col-md-6">
+            <div className="card shadow-lg">
+              <div className="card-header bg-primary text-white text-center">
+                <h3 className="mb-0">Login</h3>
+              </div>
+              <div className="card-body">
+                {error && <div className="alert alert-danger">{error}</div>}
+                <form>
+                  <div className="form-group">
+                    <label htmlFor="email">Email</label>
+                    <input
+                      type="email"
+                      className={`form-control ${
+                        emailError ? "is-invalid" : ""
+                      }`}
+                      id="email"
+                      placeholder="Enter email"
+                      value={email}
+                      onChange={handleEmailChange}
+                    />
+                    {emailError && (
+                      <div className="invalid-feedback">{emailError}</div>
+                    )}
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="password">Password</label>
+                    <input
+                      type="password"
+                      className={`form-control ${
+                        passwordError ? "is-invalid" : ""
+                      }`}
+                      id="password"
+                      placeholder="Password"
+                      value={password}
+                      onChange={handlePasswordChange}
+                    />
+                    {passwordError && (
+                      <div className="invalid-feedback">{passwordError}</div>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-block"
+                    onClick={handleLogin}
+                    disabled={!isFormValid}
+                  >
+                    Get Started!
+                  </button>
+                </form>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
     </div>
   );
 }

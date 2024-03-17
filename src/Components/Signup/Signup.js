@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Navigate } from 'react-router-dom';
 import Navbar from '../Navbar/Navbar';
@@ -14,6 +14,16 @@ function Signup() {
   const [isFormValid, setIsFormValid] = useState(false);
   const [error, setError] = useState('');
   const [redirect, setRedirect] = useState(false);
+
+  useEffect(() => {
+    const userData = sessionStorage.getItem('userData');
+    if (userData) {
+      setRedirect(true);
+    }
+  }, []);
+  if (redirect) {
+    return <Navigate to="/shop" />;
+  }
 
   const handleSignup = async () => {
     if (validateName(name) && validateEmail(email) && validatePhone(phone) && validatePassword(password)) {
