@@ -14,8 +14,8 @@ function Login() {
   const [redirectSignUp, setRedirectSignUp] = useState(false);
 
   useEffect(() => {
-    const userData = sessionStorage.getItem("userData");
-    if (userData) {
+    const authToken = sessionStorage.getItem("authToken");
+    if (authToken) {
       setRedirect(true);
     }
   }, []);
@@ -31,8 +31,7 @@ function Login() {
         window.alert("Logged in successfully!");
         setError("");
 
-        // Store user data in session storage
-        sessionStorage.setItem("userData", JSON.stringify(response.data.user));
+        sessionStorage.setItem("authToken",response.data.token)
 
         setRedirect(true);
       } catch (error) {

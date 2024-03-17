@@ -14,25 +14,65 @@ const Cart = () => {
   const [redirect, setRedirect] = useState(false);
   const [userName, setUserName] = useState("");
   const [userId, setUserId] = useState("")
+  const [token, setToken]= useState("")
+
 
   useEffect(() => {
-    const userDataString = sessionStorage.getItem("userData");
-    if (!userDataString) {
+    const authToken=sessionStorage.getItem("authToken")
+    if (!authToken) {
       setRedirect(true);
     } else {
-      const userData = JSON.parse(userDataString);
-      const { name, id } = userData;
-      setUserName(name);
-      setUserId(id)
-      getCart();
+      setToken(authToken)
+      getCart(); 
+      fetchUserData();
     }
-  }, [userName, userId]);
+  }, [userId, token]);
+
+  const fetchUserData = async () => {
+    console.log(token)
+    try {
+      // Retrieve the auth token from session storage
+      const authToken = sessionStorage.getItem("authToken");
+  
+      // If auth token is not available, handle the error
+      if (!authToken) {
+        console.error("Auth token not found in session storage");
+        return;
+      }
+  
+      // Make a POST request to the getUserData endpoint
+      const response = await fetch("http://localhost:5000/getUserData", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Include the auth token in the headers
+        },
+      });
+  
+      // If the request was successful, parse the response JSON
+      if (response.ok) {
+        const userData = await response.json();
+        setUserName(userData.user.name)
+        setUserId(userData.user.id)
+      } else {
+        // If the request failed, log the error message
+        const errorData = await response.json();
+        console.error("Failed to fetch user data:", errorData.error);
+      }
+    } catch (error) {
+      // Handle any network or other errors
+      console.error("Error fetching user data:", error.message);
+    }
+  };
 
   if (redirect) {
     return <Navigate to="/login" />;
   }
 
   const getCart = async () => {
+    console.log('GET CART')
+    console.log(userId)
+    console.log(userName)
     try {
       const response = await axios.post("http://localhost:5000/getCart", {
         user_id: userId,

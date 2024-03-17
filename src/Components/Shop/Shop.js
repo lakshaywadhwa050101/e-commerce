@@ -12,29 +12,69 @@ const Shop = () => {
   const [redirect, setRedirect] = useState(false);
   const [userName, setUserName] = useState("");
   const [userId, setUserId] = useState("")
+  const [token, setToken]= useState("")
 
   useEffect(() => {
-    const userDataString = sessionStorage.getItem("userData");
-    if (!userDataString) {
+    const authToken=sessionStorage.getItem("authToken")
+    if (!authToken) {
       setRedirect(true);
     } else {
-      const userData = JSON.parse(userDataString);
-      const { name, id } = userData;
-      setUserName(name); 
-      setUserId(id)
-      
+      setToken(authToken)
       getProducts();
+      fetchUserData();
       getCart(); 
     }
-  }, [userName,userId]);
+  }, [userId, userName, token]);
 
   if (redirect) {
     return <Navigate to="/login" />;
   }
+  const config = {
+    headers: { authorization: `Bearer ${token}` }
+  };
+
+  const fetchUserData = async () => {
+    console.log(token)
+    try {
+      // Retrieve the auth token from session storage
+      const authToken = sessionStorage.getItem("authToken");
+  
+      // If auth token is not available, handle the error
+      if (!authToken) {
+        console.error("Auth token not found in session storage");
+        return;
+      }
+  
+      // Make a POST request to the getUserData endpoint
+      const response = await fetch("http://localhost:5000/getUserData", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Include the auth token in the headers
+        },
+      });
+  
+      // If the request was successful, parse the response JSON
+      if (response.ok) {
+        const userData = await response.json();
+        setUserName(userData.user.name)
+        setUserId(userData.user.id)
+      } else {
+        // If the request failed, log the error message
+        const errorData = await response.json();
+        console.error("Failed to fetch user data:", errorData.error);
+      }
+    } catch (error) {
+      // Handle any network or other errors
+      console.error("Error fetching user data:", error.message);
+    }
+  };
 
   const getProducts = async () => {
+    console.log('Get Products')
+    console.log(token)
     try {
-      const response = await axios.post("http://localhost:5000/products");
+      const response = await axios.post("http://localhost:5000/products",{}, config);
       setProducts(response.data.products);
     } catch (error) {
       console.log(error.response.data.error);
@@ -42,10 +82,12 @@ const Shop = () => {
   };
 
   const getCart = async () => {
+    console.log('Getting Cart')
+    console.log(userId)
     try { 
       const response = await axios.post("http://localhost:5000/getCart", {
         user_id: userId,
-      });
+      }, config);
       let count = 0;
 
       setProductsToCart(response.data.products);
@@ -72,7 +114,7 @@ const Shop = () => {
       const response = await axios.post("http://localhost:5000/addCartItem", {
         user_id: userId,
         product_id: productId,
-      });
+      }, config);
       getCart();
     } catch (error) {
       console.log(error.response.data.error);
@@ -85,7 +127,7 @@ const Shop = () => {
         const response = await axios.post("http://localhost:5000/removeCartItem", {
           user_id: userId,
           product_id: productId,
-        });
+        }, config);
         getCart();
       } catch (error) {
         console.log(error.response.data.error);

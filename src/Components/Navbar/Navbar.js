@@ -16,6 +16,7 @@ function Navbar({ type, count, onSearch, userName }) {
           // Use reverse geocoding to get the state from the latitude and longitude
           const latitude = position.coords.latitude;
           const longitude = position.coords.longitude;
+          console.log(latitude+' '+longitude)
           fetch(
             `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
           )
@@ -49,10 +50,8 @@ function Navbar({ type, count, onSearch, userName }) {
 
   const handleLogout = () => {
     // Remove session token from session storage
-    sessionStorage.removeItem("userData");
+    sessionStorage.removeItem("authToken");
     setRedirect(true);
-    // Redirect to login page
-    // history.push('/login');
   };
 
   if (redirect) {
