@@ -16,8 +16,8 @@ function Signup() {
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
-    const userData = sessionStorage.getItem('userData');
-    if (userData) {
+    const authToken = sessionStorage.getItem('authToken');
+    if (authToken) {
       setRedirect(true);
     }
   }, []);
