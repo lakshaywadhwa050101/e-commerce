@@ -16,7 +16,7 @@ function Navbar({ type, count, onSearch, userName }) {
           // Use reverse geocoding to get the state from the latitude and longitude
           const latitude = position.coords.latitude;
           const longitude = position.coords.longitude;
-          console.log(latitude+' '+longitude)
+          console.log(latitude + " " + longitude);
           fetch(
             `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
           )
@@ -68,61 +68,66 @@ function Navbar({ type, count, onSearch, userName }) {
           />
           &nbsp;&nbsp;ShopperStop!
         </Link>
-        <p className="ml-5 mt-2"><b>{userLocation}</b>, India</p>
+        <p className="ml-5 mt-2">
+          <b>{userLocation}</b>, India
+        </p>
         {type === "beforeLogin" && (
           <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ml-auto">
-            <li className="nav-item">
-              <Link className="nav-link btn-dark text-light" to="/login">
-                Login/Signup
-              </Link>
-            </li>
-          </ul>
-        </div>
-        
+            <ul className="navbar-nav ml-auto">
+              <li className="nav-item">
+                <Link className="nav-link btn-dark text-light" to="/login">
+                  Login/Signup
+                </Link>
+              </li>
+            </ul>
+          </div>
         )}
 
-        {type === 'afterLoginInCart' && (
+        {type === "afterLoginInCart" && (
           <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ml-auto">
-            <li>
-              <p className="ml-5 mt-2">Hello, <b>{userName}</b></p>
-            </li>
-            &nbsp; &nbsp;
-            <li className="nav-item">
-              <input
-                type="text"
-                placeholder="Search Products"
-                value={searchQuery}
-                onChange={handleSearchChange}
-                className="form-control rounded-pill mr-2 text-center"
-              />
-            </li>
-            &nbsp;&nbsp;
-            <li className="nav-item">
-              <button className="form-control rounded-pill mr-2 d-flex align-items-center">
-                <Link className="nav-link" to="/shop">
-                <span className="mx-auto">Shop</span>
-                </Link>
-              </button>
-            </li>
-            <li>
-              <button
-                className="btn btn-outline-primary rounded-pill ml-2"
-                onClick={handleLogout}
-              >
-                Log-Out
-              </button>
-            </li>
-          </ul>
-        </div>
+            <ul className="navbar-nav ml-auto">
+              <li>
+                <p className="ml-5 mt-2">
+                  Hello, <b>{userName}</b>
+                </p>
+              </li>
+              &nbsp; &nbsp;
+              <li className="nav-item">
+                <input
+                  type="text"
+                  placeholder="Search Products"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  className="form-control rounded-pill mr-2 text-center"
+                />
+              </li>
+              &nbsp;&nbsp;
+              <li className="nav-item">
+                <button className="form-control rounded-pill mr-2 d-flex align-items-center">
+                  <Link className="nav-link" to="/shop">
+                    <span className="mx-auto">Shop</span>
+                  </Link>
+                </button>
+              </li>
+              <li>
+                <button
+                  className="btn btn-outline-primary rounded-pill ml-2"
+                  onClick={handleLogout}
+                >
+                  Log-Out
+                </button>
+              </li>
+            </ul>
+          </div>
         )}
 
         {type === "afterLogin" && (
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ml-auto">
               <li>
-                <p className="ml-5 mt-2">Hello, <b>{userName}</b></p>
+                <p className="ml-5 mt-2">
+                  Hello, <b>{userName}</b>
+                </p>
               </li>
               &nbsp; &nbsp;
               <li className="nav-item">

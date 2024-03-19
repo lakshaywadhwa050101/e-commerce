@@ -204,15 +204,6 @@ const Cart = () => {
     }
   };
 
-  const clearCart = () => {
-    setCart([]);
-  };
-
-  const checkout = () => {
-    setOrderPlaced(true);
-    setCart([]);
-  };
-
   const getTotalAmount = () => {
     return cart.reduce(
       (total, item) => total + parseInt(item.price) * countMap.get(item.id),

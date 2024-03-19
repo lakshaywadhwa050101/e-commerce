@@ -11,18 +11,18 @@ const Shop = () => {
 
   const [redirect, setRedirect] = useState(false);
   const [userName, setUserName] = useState("");
-  const [userId, setUserId] = useState("")
-  const [token, setToken]= useState("")
+  const [userId, setUserId] = useState("");
+  const [token, setToken] = useState("");
 
   useEffect(() => {
-    const authToken=sessionStorage.getItem("authToken")
+    const authToken = sessionStorage.getItem("authToken");
     if (!authToken) {
       setRedirect(true);
     } else {
-      setToken(authToken)
+      setToken(authToken);
       getProducts();
       fetchUserData();
-      getCart(); 
+      getCart();
     }
   }, [userId, userName, token]);
 
@@ -30,21 +30,21 @@ const Shop = () => {
     return <Navigate to="/login" />;
   }
   const config = {
-    headers: { authorization: `Bearer ${token}` }
+    headers: { authorization: `Bearer ${token}` },
   };
 
   const fetchUserData = async () => {
-    console.log(token)
+    console.log(token);
     try {
       // Retrieve the auth token from session storage
       const authToken = sessionStorage.getItem("authToken");
-  
+
       // If auth token is not available, handle the error
       if (!authToken) {
         console.error("Auth token not found in session storage");
         return;
       }
-  
+
       // Make a POST request to the getUserData endpoint
       const response = await fetch("http://localhost:5000/getUserData", {
         method: "POST",
@@ -53,12 +53,12 @@ const Shop = () => {
           Authorization: `Bearer ${token}`, // Include the auth token in the headers
         },
       });
-  
+
       // If the request was successful, parse the response JSON
       if (response.ok) {
         const userData = await response.json();
-        setUserName(userData.user.name)
-        setUserId(userData.user.id)
+        setUserName(userData.user.name);
+        setUserId(userData.user.id);
       } else {
         // If the request failed, log the error message
         const errorData = await response.json();
@@ -71,10 +71,14 @@ const Shop = () => {
   };
 
   const getProducts = async () => {
-    console.log('Get Products')
-    console.log(token)
+    console.log("Get Products");
+    console.log(token);
     try {
-      const response = await axios.post("http://localhost:5000/products",{}, config);
+      const response = await axios.post(
+        "http://localhost:5000/products",
+        {},
+        config
+      );
       setProducts(response.data.products);
     } catch (error) {
       console.log(error.response.data.error);
@@ -82,12 +86,16 @@ const Shop = () => {
   };
 
   const getCart = async () => {
-    console.log('Getting Cart')
-    console.log(userId)
-    try { 
-      const response = await axios.post("http://localhost:5000/getCart", {
-        user_id: userId,
-      }, config);
+    console.log("Getting Cart");
+    console.log(userId);
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/getCart",
+        {
+          user_id: userId,
+        },
+        config
+      );
       let count = 0;
 
       setProductsToCart(response.data.products);
@@ -108,30 +116,36 @@ const Shop = () => {
     }
   };
 
-
   const addToCart = async (productId) => {
     try {
-      const response = await axios.post("http://localhost:5000/addCartItem", {
-        user_id: userId,
-        product_id: productId,
-      }, config);
+      const response = await axios.post(
+        "http://localhost:5000/addCartItem",
+        {
+          user_id: userId,
+          product_id: productId,
+        },
+        config
+      );
       getCart();
     } catch (error) {
       console.log(error.response.data.error);
     }
-  }
+  };
 
   const removeFromCart = async (userId, productId) => {
-
-      try {
-        const response = await axios.post("http://localhost:5000/removeCartItem", {
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/removeCartItem",
+        {
           user_id: userId,
           product_id: productId,
-        }, config);
-        getCart();
-      } catch (error) {
-        console.log(error.response.data.error);
-      }
+        },
+        config
+      );
+      getCart();
+    } catch (error) {
+      console.log(error.response.data.error);
+    }
 
     const updatedProducts = products.map((product) => {
       if (product.id === productId) {
@@ -230,12 +244,19 @@ const Shop = () => {
   );
 };
 
-const ProductCard = ({ product, addToCart, removeFromCart, decreaseQuantity, countMap , userId}) => {
+const ProductCard = ({
+  product,
+  addToCart,
+  removeFromCart,
+  decreaseQuantity,
+  countMap,
+  userId,
+}) => {
   const handleAddToCart = () => {
     addToCart(product.id);
   };
 
-  const count = countMap.get(product.id) || 0; 
+  const count = countMap.get(product.id) || 0;
   return (
     <div className="card h-100">
       <img
@@ -251,7 +272,7 @@ const ProductCard = ({ product, addToCart, removeFromCart, decreaseQuantity, cou
           <div className="btn-group mt-auto" role="group">
             <button
               className="btn btn-sm btn-secondary me-1"
-              onClick={() => removeFromCart(userId,product.id)}
+              onClick={() => removeFromCart(userId, product.id)}
               style={{ fontSize: "0.75rem" }}
             >
               -
@@ -266,14 +287,14 @@ const ProductCard = ({ product, addToCart, removeFromCart, decreaseQuantity, cou
             </button>
           </div>
         ) : (
-        <button
-          className="btn btn-sm btn-primary mt-auto"
-          onClick={handleAddToCart}
-          style={{ width: "fit-content" }}
-        >
-          Add to Cart
-        </button>
-        )} 
+          <button
+            className="btn btn-sm btn-primary mt-auto"
+            onClick={handleAddToCart}
+            style={{ width: "fit-content" }}
+          >
+            Add to Cart
+          </button>
+        )}
       </div>
     </div>
   );

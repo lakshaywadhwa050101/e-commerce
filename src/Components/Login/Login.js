@@ -31,13 +31,13 @@ function Login() {
         window.alert("Logged in successfully!");
         setError("");
 
-        sessionStorage.setItem("authToken",response.data.token)
+        sessionStorage.setItem("authToken", response.data.token);
 
         setRedirect(true);
       } catch (error) {
-        if(error.response.data.error==='User not found'){
-          window.alert('User Not Found, Kindly Sign Up!')
-          setRedirectSignUp(true)
+        if (error.response.data.error === "User not found") {
+          window.alert("User Not Found, Kindly Sign Up!");
+          setRedirectSignUp(true);
         }
         setError(error.response.data.error);
       }
